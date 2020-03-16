@@ -8,7 +8,6 @@ resource "aws_instance" "this" {
 
   ami              = var.ami
   instance_type    = var.instance_type
-  user_data        = var.user_data
   user_data_base64 = var.user_data_base64
   subnet_id = length(var.network_interface) > 0 ? null : element(
     distinct(compact(concat([var.subnet_id], var.subnet_ids))),
@@ -31,7 +30,6 @@ resource "aws_instance" "this" {
     #! /bin/bash -e
     hostnamectl set-hostname ${local.hostname_prefix}-${count.index + 1}
   EOF
-  }
 
   dynamic "root_block_device" {
     for_each = var.root_block_device
