@@ -1,6 +1,6 @@
 locals {
   is_t_instance_type = replace(var.instance_type, "/^t(2|3|3a){1}\\..*$/", "1") == "1" ? true : false
-  hostname           = var.hostname != "" ? var.hostname : var.tags.Role
+  hostname_prefix    = var.hostname_prefix != "" ? var.hostname_prefix : var.tags.Role
 }
 
 resource "aws_instance" "this" {
@@ -29,7 +29,7 @@ resource "aws_instance" "this" {
 
   user_data = << EOF
     #! /bin/bash -e
-    hostnamectl set-hostname ${local.hostname}-${count.index + 1}
+    hostnamectl set-hostname ${local.hostname_prefix}-${count.index + 1}
   EOF
   }
 
