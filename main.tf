@@ -1,6 +1,17 @@
 locals {
   is_t_instance_type = replace(var.instance_type, "/^t(2|3|3a){1}\\..*$/", "1") == "1" ? true : false
   hostname_prefix    = var.hostname_prefix != "" ? var.hostname_prefix : var.tags.Role
+  hostnames          = formatlist("%s-%d", local.hostname_prefix, range(1, var.instance_count + 1))
+}
+
+data "template_file" "user_data" {
+  count = var.instance_count
+
+  template = var.user_data
+
+  vars = {
+    hostname = local.hostnames[count.index]
+  }
 }
 
 resource "aws_instance" "this" {
@@ -8,6 +19,7 @@ resource "aws_instance" "this" {
 
   ami              = var.ami
   instance_type    = var.instance_type
+  user_data        = data.template_file.user_data[count.index].rendered
   user_data_base64 = var.user_data_base64
   subnet_id = length(var.network_interface) > 0 ? null : element(
     distinct(compact(concat([var.subnet_id], var.subnet_ids))),
@@ -25,11 +37,6 @@ resource "aws_instance" "this" {
   ipv6_addresses              = var.ipv6_addresses
 
   ebs_optimized = var.ebs_optimized
-
-  user_data = <<EOF
-    #!/bin/bash -e
-    hostnamectl set-hostname ${local.hostname_prefix}-${count.index + 1}
-EOF
 
   dynamic "root_block_device" {
     for_each = var.root_block_device
