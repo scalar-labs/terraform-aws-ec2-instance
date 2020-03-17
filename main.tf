@@ -1,6 +1,6 @@
 locals {
   is_t_instance_type = replace(var.instance_type, "/^t(2|3|3a){1}\\..*$/", "1") == "1" ? true : false
-  hostname_prefix    = var.hostname_prefix != "" ? var.hostname_prefix : "ip-`curl -s 169.254.169.254/latest/meta-data/local-ipv4/ | sed -e 's/\./-/g'`"
+  hostname_prefix    = var.hostname_prefix != "" ? var.hostname_prefix : "ip-`curl -s 169.254.169.254/latest/meta-data/local-ipv4/ | sed -e 's/\\./-/g'`"
   hostnames          = formatlist("%s-%d", local.hostname_prefix, range(1, var.instance_count + 1))
 }
 
