@@ -27,7 +27,7 @@ resource "aws_instance" "this" {
   ebs_optimized = var.ebs_optimized
 
   user_data = <<EOF
-    #! /bin/bash -e
+    #!/bin/bash -e
     hostnamectl set-hostname ${local.hostname_prefix}-${count.index + 1}
 EOF
 
