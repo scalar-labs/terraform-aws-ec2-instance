@@ -112,7 +112,11 @@ variable "source_dest_check" {
 variable "user_data" {
   description = "The user data to provide when launching the instance. Do not pass gzip-compressed data via this argument; see user_data_base64 instead."
   type        = string
-  default     = null
+  default     = <<EOF
+#!/bin/bash
+
+hostnamectl set-hostname $${hostname}
+EOF
 }
 
 variable "user_data_base64" {
@@ -187,3 +191,7 @@ variable "use_num_suffix" {
   default     = false
 }
 
+variable "hostname_prefix" {
+  description = "Name to be used on all instances's hostname as prefix"
+  default     = ""
+}
