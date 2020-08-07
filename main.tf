@@ -105,4 +105,10 @@ resource "aws_instance" "this" {
   credit_specification {
     cpu_credits = local.is_t_instance_type ? var.cpu_credits : null
   }
+
+  # Once following PR is merged, remove lifecycle block.
+  # https://github.com/terraform-providers/terraform-provider-aws/pull/12226
+  lifecycle {
+    ignore_changes = [volume_tags]
+  }
 }
